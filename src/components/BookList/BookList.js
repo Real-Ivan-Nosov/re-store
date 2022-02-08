@@ -5,20 +5,25 @@ import { useEffect } from 'react';
 import BookListItem from '../BookListItem/BookListItem';
 import WithBookstoreService from '../HOC/WithBookstoreService';
 import {booksLoaded} from '../../actions';
+import Spinner from '../Spinner/Spinner';
 
 import './BookList.css';
 
 const BookList = (props) => {
-  const { books } = props;
+  const { books, loading } = props;
+
 
   useEffect(() => {
-    //1. receive data
     const {bookstoreService, booksLoaded} = props;
-    const data = bookstoreService.getBooks();
-
-    //2. dispatch action to store
-    booksLoaded(data)
+    bookstoreService.getBooks()
+      .then((data) => {
+        booksLoaded(data)
+      })
   }, [])
+
+  if (loading) {
+    return <Spinner />
+  }
 
   return (
     <ul className='book-list'>
@@ -31,7 +36,8 @@ const BookList = (props) => {
 
 const mapStateToProps = (state) => {
   return {
-      books: state.books
+      books: state.books,
+      loading: state.loading
   }
 }
 
