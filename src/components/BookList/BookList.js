@@ -4,25 +4,33 @@ import { useEffect } from 'react';
 
 import BookListItem from '../BookListItem/BookListItem';
 import WithBookstoreService from '../HOC/WithBookstoreService';
-import {booksLoaded} from '../../actions';
 import Spinner from '../Spinner/Spinner';
+import { booksLoaded, booksRequested, booksError } from '../../actions';
 
 import './BookList.css';
+import ErrorIndicator from '../ErrorIndicator/ErrorIndicator';
 
 const BookList = (props) => {
-  const { books, loading } = props;
+  const { books, loading, error } = props;
 
 
   useEffect(() => {
-    const {bookstoreService, booksLoaded} = props;
+    const {bookstoreService, booksLoaded,
+       booksRequested, booksError} = props;
+    booksRequested();
     bookstoreService.getBooks()
       .then((data) => {
         booksLoaded(data)
       })
+      .catch((err) => booksError(err))
   }, [])
 
   if (loading) {
     return <Spinner />
+  }
+
+  if (error) {
+    return <ErrorIndicator />
   }
 
   return (
@@ -37,12 +45,15 @@ const BookList = (props) => {
 const mapStateToProps = (state) => {
   return {
       books: state.books,
-      loading: state.loading
+      loading: state.loading,
+      error: state.error
   }
 }
 
 const mapDispatchToProps = {
-    booksLoaded
+    booksLoaded,
+    booksRequested,
+    booksError
 }
 
 export default WithBookstoreService()(
