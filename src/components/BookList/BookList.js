@@ -39,11 +39,11 @@ const BookListContainer = (props) => {
   return <BookList books={books} onAddedToCart={onAddedToCart}/>
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = ({bookList: {books, loading, error}}) => {
   return {
-    books: state.books,
-    loading: state.loading,
-    error: state.error
+    books,
+    loading,
+    error
   }
 }
 
