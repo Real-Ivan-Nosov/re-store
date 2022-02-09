@@ -15,14 +15,7 @@ const BookList = (props) => {
 
 
   useEffect(() => {
-    const {bookstoreService, booksLoaded,
-       booksRequested, booksError} = props;
-    booksRequested();
-    bookstoreService.getBooks()
-      .then((data) => {
-        booksLoaded(data)
-      })
-      .catch((err) => booksError(err))
+    props.fetchBooks()
   }, [])
 
   if (loading) {
@@ -50,10 +43,16 @@ const mapStateToProps = (state) => {
   }
 }
 
-const mapDispatchToProps = {
-    booksLoaded,
-    booksRequested,
-    booksError
+const mapDispatchToProps = (dispatch, ownProps) => {
+  const { bookstoreService } = ownProps;
+  return {
+    fetchBooks: () => {   
+      dispatch(booksRequested());
+      bookstoreService.getBooks()
+        .then((data) => dispatch(booksLoaded(data)))
+        .catch((err) => dispatch(booksError(err)))
+    }
+  }
 }
 
 export default WithBookstoreService()(
